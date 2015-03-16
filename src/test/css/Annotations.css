@@ -1,0 +1,23 @@
+/* Annotations.css */
+
+h1, h2, h3 {font-size: small; font-weight: normal; margin: 0%; padding: 0%; text-transform: capitalize;}
+
+a, a:focus, a:link, a:hover, a:visited {background: inherit; color: inherit; outline: none; text-decoration: none;}
+a:hover {text-decoration: underline;}
+body {background: white; color: black; font-family: Verdana, Helvetica, Arial, sans-serif; font-size: x-small; height: auto; margin: 0%; padding: 0%; width: 100%;}
+div {border: none; height: auto; margin: 0%; padding: 0%; width: 100%;}
+
+div#header {background: inherit; color: inherit; height: auto; margin: 1.5% 1.5% 1.5% 1.5%; padding: 0%; width: 97%;}
+div#header h1 {background: inherit; border-bottom: black solid 1px; color: inherit; font-family: Courier New, sans-serif; font-size: large; font-weight: bold; width: 100%;}
+
+div#results {background: inherit; color: inherit; margin: 0% 1.5% 1.5% 1.5%; padding: 0%; width: 97%;}
+div#results h1 {background: inherit; color: inherit; font-family: Courier New, sans-serif; font-size: medium; font-weight: bold; margin: 0% 0% 1em 0%; width: 100%;}
+div#results pre {font-size: medium; margin: 0%; padding: 0%;}
+
+div#errors {background: inherit; color: inherit; margin: 0% 1.5% 1.5% 1.5%; padding: 0%; width: 97%;}
+div#errors h1 {background: inherit; color: inherit; font-family: Courier New, sans-serif; font-size: medium; font-weight: bold; margin: 0% 0% 1em 0%; width: 100%;}
+div#errors pre {font-size: medium; margin: 0%; padding: 0%;}
+
+div#summary {background: inherit; color: inherit; margin: 0% 1.5% 1.5% 1.5%; padding: 0%; width: 97%;}
+div#summary h1 {background: inherit; color: inherit; font-family: Courier New, sans-serif; font-size: medium; font-weight: bold; margin: 0% 0% 1em 0%; width: 100%;}
+div#summary pre {font-size: medium; margin: 0%; padding: 0%;}

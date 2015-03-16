@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html>
+	<head>
+		<title>Annotations.js - Unit Tests</title>
+		<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8"/>
+		<link rel="stylesheet" title="Standard Style" href="/css/Annotations.css" media="screen" type="text/css"/>
+	</head>
+	<body>
+
+		<script type="text/javascript" src="/javascript/annotations.js"></script>
+		<script type="text/javascript" src="https://raw.githubusercontent.com/david-padgett/fn-test.js/master/dist/fn-test.js"></script>
+
+		<script type="text/javascript">
+			$$test = __FnTest;
+			$$test.resultsId = "results";
+			$$test.errorsId = "errors";
+			$$test.summaryId = "summary";
+		</script>
+
+		<div id="header">
+			<h1>Annotations.js - Unit Tests</h1>
+		</div>
+
+		<div id="results">
+			<h1>results</h1>
+		</div>
+
+		<div id="errors">
+			<h1>errors</h1>
+		</div>
+
+		<div id="summary">
+			<h1>summary</h1>
+		</div>
+
+		<script type="text/javascript" src="/javascript/test1-annotate.js"></script>
+		<script type="text/javascript" src="/javascript/test2-type.js"></script>
+		<script type="text/javascript" src="/javascript/test3-prototype.js"></script>
+		<script type="text/javascript" src="/javascript/test4-internal.js"></script>
+		<script type="text/javascript" src="/javascript/test5-literal.js"></script>
+
+		<script type="text/javascript">
+			$$test.summary();
+		</script>
+
+	</body>
+</html>

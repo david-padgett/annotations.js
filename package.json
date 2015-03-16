@@ -1,0 +1,21 @@
+{
+  "name": "annotations-js",
+  "version": "1.0.0",
+  "description": "annotations.js - a type, method, and object annotations-enabling library for JavaScript.",
+  "main": "annotations.js",
+	"scripts": {
+		"test": "make -f anotations.mak test"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/david-padgett/anotations.js"
+	},
+	"keywords": [
+		"annotations", "annotations libary", "annotations framework"
+	],
+	"author": "David Padgett <david@summitstreet.biz> (http://summitstreet.biz/)",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/david-padgett/anotations.js/issues"
+	}
+}
