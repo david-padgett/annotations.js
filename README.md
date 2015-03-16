@@ -36,9 +36,9 @@ function ExampleMethodAnnotation2() {
 $TypeAnnotation(); $MethodAnnotation();
 function ExampleTypeAndMethodAnnotation() {
 }
-```
 
 $DefineAnnotation(ExampleTypeAndMethodAnnotation);
+```
 
 > Example 4 - Annotate a type and methods defined via the prototype.
 
