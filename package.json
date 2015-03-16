@@ -2,7 +2,7 @@
   "name": "annotations-js",
   "version": "1.0.0",
   "description": "annotations.js - a type, method, and object annotations-enabling library for JavaScript.",
-  "main": "annotations.js",
+  "main": "dist/annotations-node.js",
 	"scripts": {
 		"test": "make -f anotations.mak test"
 	},
