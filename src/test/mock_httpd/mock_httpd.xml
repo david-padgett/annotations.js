@@ -72,19 +72,19 @@
 			</response>
 		</transaction>
 
-		<transaction id="Annotations.css" uri="/css/Annotations.css" method="GET">
+		<transaction id="annotations.css" uri="/css/annotations.css" method="GET">
 			<response>
-				<messageBody mimeType="text/css">${_IMPORT test/css/Annotations.css}</messageBody>
+				<messageBody mimeType="text/css">${_IMPORT test/css/annotations.css}</messageBody>
 			</response>
 		</transaction>
 
-		<transaction id="Annotations.html" uri="/Annotations.html" method="GET">
+		<transaction id="annotations.html" uri="/annotations.html" method="GET">
 			<response>
-				<messageBody mimeType="text/html">${_IMPORT test/html/Annotations.html}</messageBody>
+				<messageBody mimeType="text/html">${_IMPORT test/html/annotations.html}</messageBody>
 			</response>
 		</transaction>
 
-		<transaction id="Annotations.js" uri="/javascript/annotations.js" method="GET">
+		<transaction id="annotations.js" uri="/javascript/annotations.js" method="GET">
 			<response>
 				<messageBody mimeType="application/javascript">${_IMPORT main/javascript/annotations.js}</messageBody>
 			</response>

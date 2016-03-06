@@ -1,35 +1,55 @@
-SED_SLC_REGEX="/\/\//d"
-SED_MLC_REGEX="/\/\*\*/,/\*\//d"
+#
+# The MIT License (MIT)
+#
+# Copyright (c) 2015 David Padgett/Summit Street, Inc.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
-SED_ARGS=$(if grep -c 'Darwin',-i "",-i)
+# annotations.js/annotations.mak
 
-dist/annotations.js : src/main/javascript/annotations.js
-	@echo Building $@
-	@mkdir -p dist
-	@cat $+ > $@
-	@sed $(SED_ARGS) $(SED_SLC_REGEX) $@
-	@sed $(SED_ARGS) $(SED_MLC_REGEX) $@
+include $(MAKEFILE_DIR)/javascript_vars.mak
 
-dist/annotations-node.js : src/main/javascript/annotations-node-prefix.js src/main/javascript/annotations.js src/main/javascript/annotations-node-suffix.js
-	@echo Building $@
-	@mkdir -p dist
-	@cat $+ > $@
-	@sed $(SED_ARGS) $(SED_SLC_REGEX) $@
-	@sed $(SED_ARGS) $(SED_MLC_REGEX) $@
+BUILD_DEPENDENCIES=\
+	github.com/david-padgett/fn-test.js.git
 
-dist/annotations-node-tests.js : src/test/javascript/node-prefix.js src/test/javascript/test1-annotate.js src/test/javascript/test2-type.js src/test/javascript/test3-prototype.js src/test/javascript/test4-internal.js src/test/javascript/test5-literal.js src/test/javascript/node-suffix.js
-	@echo Building $@
-	@mkdir -p dist
-	@cat $+ > $@
-	@sed $(SED_ARGS) $(SED_SLC_REGEX) $@
-	@sed $(SED_ARGS) $(SED_MLC_REGEX) $@
+BUILD_TARGETS=\
+	annotations.js \
+	annotations-node.js
 
-all: dist/annotations.js dist/annotations-node.js dist/annotations-node-tests.js node_modules/fn-test
+TEST_TARGETS=\
+	annotations-node-tests.js
 
-node_modules/fn-test :
-	@echo Installing $@
-	@npm install git://github.com/david-padgett/fn-test.js.git
+annotations.js : \
+	$(SOURCE_DIR)/main/javascript/annotations.js
 
-test: all
-	@echo Running unit tests
-	@node dist/annotations-node-tests.js
+annotations-node.js : \
+	$(SOURCE_DIR)/main/javascript/annotations-node-prefix.js \
+	$(SOURCE_DIR)/main/javascript/annotations.js \
+	$(SOURCE_DIR)/main/javascript/annotations-node-suffix.js
+
+annotations-node-tests.js : \
+	$(SOURCE_DIR)/test/javascript/node-prefix.js \
+	$(SOURCE_DIR)/test/javascript/test1-annotate.js \
+	$(SOURCE_DIR)/test/javascript/test2-type.js \
+	$(SOURCE_DIR)/test/javascript/test3-prototype.js \
+	$(SOURCE_DIR)/test/javascript/test4-internal.js \
+	$(SOURCE_DIR)/test/javascript/test5-literal.js \
+	$(SOURCE_DIR)/test/javascript/node-suffix.js
+
+include $(MAKEFILE_DIR)/javascript_rules.mak

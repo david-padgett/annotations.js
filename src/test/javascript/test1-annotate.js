@@ -5,18 +5,16 @@ function annotationsSize() {
 }
 
 function unboundAnnotationsSize(construct) {
-	var size = 0;
-	var unboundAnnotations = construct == null ? __Annotations.UNBOUND_ANNOTATIONS : construct.__Annotations.unboundAnnotations;
-	for (var i in unboundAnnotations) {
-		++size;
-	}
-	return (size);
+	return __Annotations.getUnboundAnnotations(construct).length;
 }
 
+var systemAnnotations = 4;
+
 try {
+	$$test.expect(86, 0, 0);
+
+	// Test group #1
 	$$test.message("test1-annotate", "DescriptiveType Annotation");
-	var prefix = __Annotations.FRAMEWORK_PREFIX;
-	var systemAnnotations = 4;
 	$$test.assert("No non-system Annotations defined", function() {return annotationsSize() == systemAnnotations});
 	$$test.assert("No unbound annotations", function() {return unboundAnnotationsSize() == 0});
 
@@ -39,7 +37,9 @@ try {
 	$$test.assert("Annotation is annotated", function() {return __Annotations.getFrameworkState(DescriptiveType).annotations.length > 0});
 	$$test.assert("Annotation has TypeAnnotation annotation", function() {return __Annotations.getFrameworkState(DescriptiveType).annotations[0].constructor == __Annotations.AnnotationTypes.TypeAnnotation});
 	$$test.assert("Annotation is the correct Function in global namespace", function() {return $DescriptiveType.name == "__AnnotatedTypeConstructor"});
-	$$test.assert("Annotation type has correct state - " + DescriptiveType[prefix].name + " == DescriptiveType", function() {return DescriptiveType[prefix].name == "$DescriptiveType"});
+	$$test.assert("Annotation type has correct state - " + __Annotations.getFrameworkState(DescriptiveType).name + " == DescriptiveType", function() {return __Annotations.getFrameworkState(DescriptiveType).name == "$DescriptiveType"});
+
+	// Test group #2
 	$$test.message("test1-annotate", "RESTfulType Annotation");
 
 	$TypeAnnotation();
@@ -49,6 +49,15 @@ try {
 	$DefineAnnotation(RESTfulType);
 
 	$$test.assert("2 non-system Annotations defined", function() {return annotationsSize() == systemAnnotations + 2});
+	$$test.assert("No unbound annotations", function() {return unboundAnnotationsSize() == 0});
+	$$test.assert("Annotation is defined in global namespace", function() {return this.$RESTfulType != null});
+	$$test.assert("Annotation is a Function in global namespace", function() {return this.$RESTfulType.constructor == Function});
+	$$test.assert("Annotation is annotated", function() {return __Annotations.getFrameworkState(RESTfulType).annotations.length > 0});
+	$$test.assert("Annotation has TypeAnnotation annotation", function() {return __Annotations.getFrameworkState(RESTfulType).annotations[0].constructor == __Annotations.AnnotationTypes.TypeAnnotation});
+	$$test.assert("Annotation is the correct Function in global namespace", function() {return $RESTfulType.name == "__AnnotatedTypeConstructor"});
+	$$test.assert("Annotation type has correct state - " + __Annotations.getFrameworkState(RESTfulType).name + " == RESTfulType", function() {return __Annotations.getFrameworkState(RESTfulType).name == "$RESTfulType"});
+
+	// Test group #3
 	$$test.message("test1-annotate", "HtmlType Annotation");
 
 	var data = {name: "testName", value: "testValue"};
@@ -61,8 +70,10 @@ try {
 	$$test.assert("3 non-system Annotations defined", function() {return annotationsSize() == systemAnnotations + 3});
 	$$test.assert("Annotation has 2 annotations", function() {return __Annotations.getFrameworkState(HtmlType).annotations.length == 2});
 	$$test.assert("Annotation has TypeAnnotation annotation", function() {return __Annotations.getFrameworkState(HtmlType).annotations[0].constructor == __Annotations.AnnotationTypes.TypeAnnotation});
-	$$test.assert("Annotation has Annotation annotation", function() {return __Annotations.getFrameworkState(HtmlType).annotations[1].constructor == __Annotations.AnnotationTypes.ValueAnnotation});
-	$$test.assert("Annotation annotation has correct state", function() {return __Annotations.getFrameworkState(HtmlType).annotations[1].value.name == data.name});
+	$$test.assert("Annotation has ValueAnnotation annotation", function() {return __Annotations.getFrameworkState(HtmlType).annotations[1].constructor == __Annotations.AnnotationTypes.ValueAnnotation});
+	$$test.assert("Annotation type has correct state", function() {return __Annotations.getFrameworkState(HtmlType).annotations[1].value.name == data.name});
+
+	// Test group #4
 	$$test.message("test1-annotate", "RESTfulMethod Annotation");
 
 	$MethodAnnotation();
@@ -73,6 +84,8 @@ try {
 
 	$$test.assert("4 non-system Annotations defined", function() {return annotationsSize() == systemAnnotations + 4});
 	$$test.assert("Annotation has MethodAnnotation annotation", function() {return __Annotations.getFrameworkState(RESTfulMethod).annotations[0].constructor == __Annotations.AnnotationTypes.MethodAnnotation});
+
+	// Test group #5
 	$$test.message("test1-annotate", "UserDefinedPrefixType Annotation");
 
 	$TypeAnnotation();

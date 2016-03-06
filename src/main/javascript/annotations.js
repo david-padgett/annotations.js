@@ -277,6 +277,13 @@ var __Annotations = {
 		return (construct == null ? null : construct[__Annotations.FRAMEWORK_PREFIX]);
 	},
 
+	getUnboundAnnotations: function GetUnboundAnnotations(construct) {
+		if (construct == null) {
+			return (__Annotations.UNBOUND_ANNOTATIONS);
+		}
+		return (construct.__Annotations.unboundAnnotations);
+	},
+
 	// Initializes function aliases defined in the global namespace.
 
 	initializeAliases: function InitializeAliases() {
