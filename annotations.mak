@@ -23,6 +23,8 @@
 
 # annotations.js/annotations.mak
 
+MAKEFILE_DIR=node_modules/etc.mak/dist
+
 include $(MAKEFILE_DIR)/javascript_vars.mak
 
 BUILD_DEPENDENCIES=\
