@@ -10,8 +10,8 @@
 		"type": "git",
 		"url": "git://github.com/david-padgett/anotations.js"
 	},
-	"devDependencies": {
-		"etc.mak": "git://github.com/david-padgett/etc.mak.git"
+	"dependencies": {
+		"etc.mak": "git://github.com/david-padgett/etc.mak.git",
 		"fn-test.js": "git://github.com/david-padgett/fn-test.js.git"
 	},
 	"keywords": [
