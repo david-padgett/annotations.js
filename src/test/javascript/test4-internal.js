@@ -1,4 +1,4 @@
-// test4-internal.js
+// annotations.js/src/test/javascript/test4-internal.js
 
 try {
 	$$test.message("test4-internal", "Method Annotation - internal method");

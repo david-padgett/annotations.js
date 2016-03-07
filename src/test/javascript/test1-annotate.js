@@ -1,4 +1,4 @@
-// test1-annotate.js
+// annotations.js/src/test/javascript/test1-annotate.js
 
 function annotationsSize() {
 	return (__Annotations.getAnnotationTypes().length);

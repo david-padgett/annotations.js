@@ -1,4 +1,4 @@
-// Annotations-Node-Suffix.js
+// annotations.js/src/main/javascript/annotations-node-suffix.js
 
 __Annotations.addToNamespace = function(name, value) {
 	eval(name + " = value");

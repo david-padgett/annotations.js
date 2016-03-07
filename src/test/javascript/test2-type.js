@@ -1,4 +1,4 @@
-// test2-type.js
+// annotations.js/src/test/javascript/test2-type.js
 
 try {
 	$$test.message("test2-type", "Type Annotation");

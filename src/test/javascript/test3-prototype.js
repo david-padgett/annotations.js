@@ -1,4 +1,4 @@
-// test3-prototype.js
+// annotations.js/src/test/javascript/test3-prototype.js
 
 try {
 	$$test.message("test3-prototype", "Method Annotation - prototype");

@@ -1,4 +1,4 @@
-// test5-literal.js
+// annotations.js/src/test/javascript/test5-literal.js
 
 try {
 	$$test.message("test5-literal", "Method Annotation - object literal");
