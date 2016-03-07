@@ -10,6 +10,10 @@
 		"type": "git",
 		"url": "git://github.com/david-padgett/anotations.js"
 	},
+	"devDependencies": {
+		"etc.mak": "git://github.com/david-padgett/etc.mak.git"
+		"etc.mak": "git://github.com/david-padgett/fn-test.js.git"
+	},
 	"keywords": [
 		"annotations", "annotations libary", "annotations framework", "JavaScript annotations", "JavaScript annotations libary", "JavaScript annotations framework"
 	],
