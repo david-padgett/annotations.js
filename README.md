@@ -1,4 +1,4 @@
-#Annotations.js
+#annotations.js
 > A type, method, and object annotations-enabling library for JavaScript.
 
 ##License
