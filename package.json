@@ -11,7 +11,8 @@
 		"url": "git://github.com/david-padgett/anotations.js"
 	},
 	"dependencies": {
-		"fn-test.js": "git://github.com/david-padgett/fn-test.js.git"
+		"fn-test.js": "git://github.com/david-padgett/fn-test.js.git",
+		"etc.mak": "git://github.com/david-padgett/etc.mak.git"
 	},
 	"keywords": [
 		"annotations", "annotations libary", "annotations framework", "JavaScript annotations", "JavaScript annotations libary", "JavaScript annotations framework"
