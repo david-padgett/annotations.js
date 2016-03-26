@@ -47,6 +47,7 @@ annotations-node.js : \
 
 annotations-node-tests.js : \
 	$(SOURCE_DIR)/test/javascript/node-prefix.js \
+	$(SOURCE_DIR)/test/javascript/test0-initialize.js \
 	$(SOURCE_DIR)/test/javascript/test1-annotate.js \
 	$(SOURCE_DIR)/test/javascript/test2-type.js \
 	$(SOURCE_DIR)/test/javascript/test3-prototype.js \

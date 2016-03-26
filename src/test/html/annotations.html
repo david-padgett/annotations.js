@@ -12,13 +12,15 @@
 	<body>
 
 		<script type="text/javascript" src="/javascript/annotations.js"></script>
-		<script type="text/javascript" src="https://raw.githubusercontent.com/david-padgett/fn-test.js/master/dist/fn-test.js"></script>
+		<script type="text/javascript" src="/javascript/fn-test.js"></script>
+		<!--script type="text/javascript" src="http://cdn.rawgit.com/david-padgett/fn-test.js/master/dist/fn-test.js"></script-->
 
 		<script type="text/javascript">
-			$$test = __FnTest;
+			var $$test = new FnTest();
 			$$test.resultsId = "results";
 			$$test.errorsId = "errors";
 			$$test.summaryId = "summary";
+			var $$af = new Annotations(this, "$");
 		</script>
 
 		<div id="header">
@@ -37,6 +39,7 @@
 			<h1>summary</h1>
 		</div>
 
+		<script type="text/javascript" src="/javascript/test0-initialize.js"></script>
 		<script type="text/javascript" src="/javascript/test1-annotate.js"></script>
 		<script type="text/javascript" src="/javascript/test2-type.js"></script>
 		<script type="text/javascript" src="/javascript/test3-prototype.js"></script>

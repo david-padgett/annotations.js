@@ -84,6 +84,12 @@
 			</response>
 		</transaction>
 
+		<transaction id="fn-test.js" uri="/javascript/fn-test.js" method="GET">
+			<response>
+				<messageBody mimeType="application/javascript">${_IMPORT ../../fn-test.js/dist/fn-test.js}</messageBody>
+			</response>
+		</transaction>
+
 		<transaction id="annotations.js" uri="/javascript/annotations.js" method="GET">
 			<response>
 				<messageBody mimeType="application/javascript">${_IMPORT main/javascript/annotations.js}</messageBody>
@@ -93,6 +99,12 @@
 		<transaction id="fn-test.js" uri="/javascript/fn-test.js" method="GET">
 			<response>
 				<messageBody mimeType="application/javascript">${_IMPORT ../../fn-test.js/src/main/javascript/fn-test.js}</messageBody>
+			</response>
+		</transaction>
+
+		<transaction id="test0-initialize.js" uri="/javascript/test0-initialize.js" method="GET">
+			<response>
+				<messageBody mimeType="application/javascript">${_IMPORT test/javascript/test0-initialize.js}</messageBody>
 			</response>
 		</transaction>
 
