@@ -15,7 +15,7 @@ function ExampleTypeAnnotation(description) {
 	this.description = description;
 }
 
-$DefineAnnotation(ExampleTypeAnnotation);
+$Annotate(ExampleTypeAnnotation);
 ```
 
 > Example 2 - Declare two annotations used only for methods.
@@ -37,7 +37,7 @@ $TypeAnnotation(); $MethodAnnotation();
 function ExampleTypeAndMethodAnnotation() {
 }
 
-$DefineAnnotation(ExampleTypeAndMethodAnnotation);
+$Annotate(ExampleTypeAndMethodAnnotation);
 ```
 
 > Example 4 - Annotate a type and methods defined via the prototype.
@@ -60,7 +60,6 @@ $ExampleMethodAnnotation1(); $ExampleMethodAnnotation2();
 ExamplePrototypedType.prototype.operation2 = function() {
 }
 
-$BindAnnotations();
 ```
 
 > Example 5 - Annotate a type and methods defined internally - annotations are not bound until the class is instantiated.
@@ -112,7 +111,7 @@ $TypeAnnotation();
 function ExampleTypeAnnotation() {
 }
 
-$DefineAnnotation(ExampleTypeAnnotation, "zz");
+$Annotate(ExampleTypeAnnotation, "zz");
 
 zzExampleTypeAnnotation();
 function ExamplePrototypedType() {
