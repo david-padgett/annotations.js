@@ -23,7 +23,7 @@
  */
 
 
-function Annotations(namespace, namespacePrefix, frameworkPrefix) {
+function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 
 	function AnnotationsFrameworkState() {
 
@@ -52,7 +52,7 @@ function Annotations(namespace, namespacePrefix, frameworkPrefix) {
 
 	var annotationsFramework = this;
 
-	this.namespace = null;
+	this.rootNamespace = null;
 	this.namespacePrefix = this.constructor.name;
 	this.frameworkPrefix = this.constructor.name;
 	this.annotationTypes = {};
@@ -95,7 +95,7 @@ function Annotations(namespace, namespacePrefix, frameworkPrefix) {
 		if (arguments.length > 0) {
 			var annotation = arguments[0];
 			var args = Array.prototype.slice.call(arguments, 1);
-			this.namespace[this.namespacePrefix + annotation].apply(null, args);
+			this.rootNamespace[this.namespacePrefix + annotation].apply(null, args);
 		}
 	},
 
@@ -110,7 +110,7 @@ function Annotations(namespace, namespacePrefix, frameworkPrefix) {
 
 
 	this.addToNamespace = function(name, value) {
-		this.namespace[name] = value;
+		this.rootNamespace[name] = value;
 	};
 
 	this.addUnboundAnnotation = function(annotation) {
@@ -327,13 +327,13 @@ function Annotations(namespace, namespacePrefix, frameworkPrefix) {
 	};
 
 
-	this.initialize = function(namespace, namespacePrefix, frameworkPrefix) {
+	this.initialize = function(rootNamespace, namespacePrefix, frameworkPrefix) {
 
-		if (namespace == null) {
-			throw new Error("Unable to initialize " + this.constructor.name + ": No namespace provided when framework was instantiated.");
+		if (rootNamespace == null) {
+			throw new Error("Unable to initialize " + this.constructor.name + ": No root namespace provided when framework was instantiated.");
 		}
 
-		this.namespace = namespace;
+		this.rootNamespace = rootNamespace;
 		this.namespacePrefix = namespacePrefix == null ? this.namespacePrefix : namespacePrefix;
 		this.frameworkPrefix = frameworkPrefix == null ? this.frameworkPrefix : frameworkPrefix;
 		this.annotationTypes = {};
@@ -416,9 +416,9 @@ function Annotations(namespace, namespacePrefix, frameworkPrefix) {
 
 
 	this.removeFromNamespace = function(name) {
-		delete this.namespace[name];
+		delete this.rootNamespace[name];
 	};
 
 
-	this.initialize(namespace, namespacePrefix, frameworkPrefix);
+	this.initialize(rootNamespace, namespacePrefix, frameworkPrefix);
 }
