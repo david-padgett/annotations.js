@@ -23,7 +23,147 @@
  */
 
 
-function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
+function Annotations(rootNamespace, namespacePrefix) {
+
+
+	var __SELF = this;
+	var __ROOT_NAMESPACE = rootNamespace;
+	var __NAMESPACE_PREFIX = namespacePrefix == null ? "$" : namespacePrefix;
+	var __APP_PREFIX = __NAMESPACE_PREFIX + this.constructor.name;
+	var __PACKAGE = new __Package(new __PackageDelegate());
+
+
+
+	function __initializeConstruct(construct) {
+		if (construct != null && construct[__APP_PREFIX] == null) {
+			construct[__APP_PREFIX] = new AnnotationsFrameworkState();
+		}
+	};
+
+	function __matchesAnnotationType(annotations, annotationType) {
+		if (annotations.length == 0) {
+			return (false);
+		}
+		for (var i = 0; i < annotations.length; ++i) {
+			if (!annotations[i].constructor[__APP_PREFIX].matchesType(annotationType)) {
+				return (false);
+			}
+		}
+		return (true);
+	};
+
+
+	function __Package(delegate) {
+
+
+
+
+
+		this.delegate = delegate;
+		this.containers = [];
+
+
+
+		this.addToNamespace = function addToNamespace(name, value) {
+			__ROOT_NAMESPACE[name] = value;
+			this.invokeDelegate(arguments.callee.name);
+		};
+
+
+		this.invokeDelegate = function(operation) {
+			if (this.delegate != null && this.delegate[operation] != null && this.delegate[operation].constructor === Function) {
+				delegate[operation].apply(delegate, Array.prototype.slice.call(arguments, 1));
+			}
+		}
+
+
+		this.initializeDispatcher = function(container, api) {
+			var dispatcher = function __PackageApiDispatcher() {
+				var args = Array.prototype.slice.call(arguments, 0);
+				return (api.apply(container, args));
+			};
+			return (dispatcher);
+		};
+
+
+		this.install = function install(containers) {
+			this.containers = containers;
+			this.manageAliasedFunctions(this.containers, true);
+			this.invokeDelegate(arguments.callee.name);
+		};
+
+
+		this.manageAliasedFunctions = function(containers, addFunctions) {
+			for (var i = 0; i < containers.length; ++i) {
+				var container = containers[i];
+				for (var j in container) {
+					if (container[j] != null && container[j].constructor === Function && container[j].name.length > 0) {
+						var api = container[j];
+						var namespaceName = __NAMESPACE_PREFIX + container[j].name;
+						if (addFunctions) {
+							this.addToNamespace(namespaceName, this.initializeDispatcher(container, api));
+						}
+						else {
+							this.removeFromNamespace(namespaceName);
+						}
+					}
+				}
+			}
+		};
+
+
+		this.removeFromNamespace = function removeFromNamespace(name) {
+			this.invokeDelegate(arguments.callee.name);
+			if (!(delete __ROOT_NAMESPACE[name])) {
+				__ROOT_NAMESPACE[name] = null;
+			}
+		};
+
+
+		this.uninstall = function uninstall() {
+			this.invokeDelegate(arguments.callee.name);
+			this.manageAliasedFunctions(this.containers, false);
+		};
+
+
+		if (__ROOT_NAMESPACE == null) {
+			throw new Error("Unable to initialize " + __SELF.constructor.name + ": No root namespace provided when instantiated.");
+		}
+
+	}
+
+
+	function __PackageDelegate() {
+
+
+
+
+
+
+		this.install = function() {
+			for (var i in __SELF.systemAnnotationTypes) {
+				__SELF.systemAnnotations.push(__SELF.systemAnnotationTypes[i]);
+				__SELF.defineAnnotation(__SELF.systemAnnotationTypes[i]);
+			}
+		};
+
+		this.uninstall = function() {
+
+
+			for (var name in Object.keys(__SELF.annotationTypes)) {
+				__PACKAGE.removeFromNamespace(name);
+				delete __SELF.annotationTypes[name];
+			}
+
+
+			while (__SELF.annotatedConstructs.length > 0) {
+				delete __SELF.annotatedConstructs.pop()[__APP_PREFIX];
+			}
+
+		};
+
+
+	}
 
 	function AnnotationsFrameworkState() {
 
@@ -50,11 +190,7 @@ function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 
 	};
 
-	var annotationsFramework = this;
 
-	this.rootNamespace = null;
-	this.namespacePrefix = this.constructor.name;
-	this.frameworkPrefix = this.constructor.name;
 	this.annotationTypes = {};
 	this.annotatedConstructs = [];
 	this.systemAnnotations = [];
@@ -85,6 +221,8 @@ function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 	};
 
 
+
+
 	this.addAnnotatedConstruct = function(construct) {
 		if (construct != null && this.annotatedConstructs.indexOf(construct) == -1) {
 			this.annotatedConstructs.push(construct);
@@ -95,7 +233,7 @@ function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 		if (arguments.length > 0) {
 			var annotation = arguments[0];
 			var args = Array.prototype.slice.call(arguments, 1);
-			this.rootNamespace[this.namespacePrefix + annotation].apply(null, args);
+			__ROOT_NAMESPACE[__NAMESPACE_PREFIX + annotation].apply(null, args);
 		}
 	},
 
@@ -109,10 +247,6 @@ function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 	};
 
 
-	this.addToNamespace = function(name, value) {
-		this.rootNamespace[name] = value;
-	};
-
 	this.addUnboundAnnotation = function(annotation) {
 
 
@@ -125,10 +259,10 @@ function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 
 
 		if (!systemAnnotation) {
-			var frameworkState = this.getFrameworkState(annotation.constructor);
+			var frameworkState = annotation.constructor[__APP_PREFIX];
 
 
-			if (this.matchesAnnotationType(this.unboundAnnotations, this.systemAnnotationTypes.TypeAnnotation)) {
+			if (__matchesAnnotationType(this.unboundAnnotations, this.systemAnnotationTypes.TypeAnnotation)) {
 				if (!frameworkState.matchesType(this.systemAnnotationTypes.TypeAnnotation)) {
 					this.clearUnboundAnnotations();
 					throw new Error("Unable to add unbound annotations:  '" + annotation.constructor.name + "' is not a type annotation.");
@@ -137,13 +271,13 @@ function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 			else {
 
 
-				if (this.matchesAnnotationType(this.unboundAnnotations, this.systemAnnotationTypes.MethodAnnotation)) {
+				if (__matchesAnnotationType(this.unboundAnnotations, this.systemAnnotationTypes.MethodAnnotation)) {
 					this.annotateMethods();
 				}
 				else {
 
 
-					if (this.matchesAnnotationType(this.unboundAnnotations, this.systemAnnotationTypes.ObjectAnnotation)) {
+					if (__matchesAnnotationType(this.unboundAnnotations, this.systemAnnotationTypes.ObjectAnnotation)) {
 						if (!frameworkState.matchesType(this.systemAnnotationTypes.ObjectAnnotation)) {
 							this.clearUnboundAnnotations();
 							throw new Error("Unable to add unbound annotations:  '" + annotation.constructor.name + "' is not an object annotation.");
@@ -190,8 +324,8 @@ function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 	this.annotateConstruct = function(construct) {
 
 
-		this.initializeConstruct(construct);
-		this.getFrameworkState(construct).annotations = this.unboundAnnotations;
+		__initializeConstruct(construct);
+		construct[__APP_PREFIX].annotations = this.unboundAnnotations;
 		this.clearUnboundAnnotations();
 	};
 
@@ -205,7 +339,7 @@ function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 		var prototype = construct.constructor == Function ? construct.prototype : construct;
 		for (var i in prototype) {
 			var operation = prototype[i];
-			if (operation.constructor == Function && this.getFrameworkState(operation) == null) {
+			if (operation.constructor == Function && operation[__APP_PREFIX] == null) {
 				this.annotateConstruct(operation);
 			}
 		}
@@ -232,7 +366,7 @@ function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 	this.defineAnnotation = function(annotationType) {
 
 		var prefix = this.getPragmaValue("AnnotationsPrefix");
-		var namespaceName = (prefix != null ? prefix : this.namespacePrefix) + annotationType.name;
+		var namespaceName = (prefix != null ? prefix : __NAMESPACE_PREFIX) + annotationType.name;
 		if (this.annotationTypes[namespaceName] != null) {
 			this.clearUnboundAnnotations();
 			throw new Error("Unable to define annotation.  The annotation type has already been defined.");
@@ -246,21 +380,21 @@ function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 			annotation.constructor = annotationType;
 			annotationType.apply(annotation, arguments);
 
-			if (annotationType == annotationsFramework.systemAnnotationTypes.PragmaAnnotation) {
-				annotationsFramework.addPragma(annotation);
+			if (annotationType == __SELF.systemAnnotationTypes.PragmaAnnotation) {
+				__SELF.addPragma(annotation);
 			}
 			else {
-				annotationsFramework.addUnboundAnnotation(annotation);
+				__SELF.addUnboundAnnotation(annotation);
 			}
 		};
 
 
 		this.annotateConstruct(annotationType);
-		this.getFrameworkState(annotationType).initialize(namespaceName, annotationHandler);
+		annotationType[__APP_PREFIX].initialize(namespaceName, annotationHandler);
 
 
 		this.annotationTypes[namespaceName] = annotationHandler;
-		this.addToNamespace(namespaceName, annotationHandler);
+		__PACKAGE.addToNamespace(namespaceName, annotationHandler);
 	};
 
 
@@ -294,13 +428,8 @@ function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 	};
 
 	this.getAnnotations = function GetAnnotations(construct) {
-		var state = this.getFrameworkState(construct);
+		var state = construct[__APP_PREFIX];
 		return (state != null ? state.annotations : null);
-	};
-
-
-	this.getFrameworkState = function(construct) {
-		return (construct == null ? null : construct[this.frameworkPrefix]);
 	};
 
 	this.getPragmaValue = function GetPragmaValue(name) {
@@ -314,7 +443,7 @@ function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 
 
 	this.hasAnnotation = function HasAnnotation(construct, annotationType) {
-		var frameworkState = this.getFrameworkState(construct);
+		var frameworkState = construct[__APP_PREFIX];
 		if (frameworkState == null || frameworkState.annotations.length == 0) {
 			return (false);
 		}
@@ -327,100 +456,7 @@ function Annotations(rootNamespace, namespacePrefix, frameworkPrefix) {
 	};
 
 
-	this.initialize = function(rootNamespace, namespacePrefix, frameworkPrefix) {
-
-		if (rootNamespace == null) {
-			throw new Error("Unable to initialize " + this.constructor.name + ": No root namespace provided when framework was instantiated.");
-		}
-
-		this.rootNamespace = rootNamespace;
-		this.namespacePrefix = namespacePrefix == null ? this.namespacePrefix : namespacePrefix;
-		this.frameworkPrefix = frameworkPrefix == null ? this.frameworkPrefix : frameworkPrefix;
-		this.annotationTypes = {};
-		this.annotatedConstructs = [];
-		this.initializeAliasedFunctions([this], true);
-		this.initializeSystemAnnotations();
-	};
-
-
-	this.initializeAliasedFunctions = function(containers, addFunctions) {
-		for (var i = 0; i < containers.length; ++i) {
-			var container = containers[i];
-			for (var j in container) {
-				if (container[j] != null && container[j].constructor == Function && container[j].name != "") {
-					var api = container[j];
-					var namespaceName = this.namespacePrefix + container[j].name;
-					if (addFunctions) {
-						this.addToNamespace(namespaceName, this.initializeDispatcher(container, api));
-					}
-					else {
-						this.removeFromNamespace(namespaceName);
-					}
-				}
-			}
-		}
-	};
-
-
-	this.initializeConstruct = function(construct) {
-		if (construct != null && construct[this.frameworkPrefix] == null) {
-			construct[this.frameworkPrefix] = new AnnotationsFrameworkState();
-		}
-	};
-
-	this.initializeDispatcher = function(container, api) {
-		var dispatcher = function __AnnotationApiDispatcher() {
-			var args = Array.prototype.slice.call(arguments, 0);
-			return (api.apply(container, args));
-		};
-		return (dispatcher);
-	};
-
-	this.initializeSystemAnnotations = function() {
-		for (var i in this.systemAnnotationTypes) {
-			this.systemAnnotations.push(this.systemAnnotationTypes[i]);
-			this.defineAnnotation(this.systemAnnotationTypes[i]);
-		}
-	};
-
-	this.matchesAnnotationType = function(annotations, annotationType) {
-		if (annotations.length == 0) {
-			return (false);
-		}
-		for (var i = 0; i < annotations.length; ++i) {
-			if (!this.getFrameworkState(annotations[i].constructor).matchesType(annotationType)) {
-				return (false);
-			}
-		}
-		return (true);
-	};
-
-
-	this.removeAnnotationsFramework = function() {
-
-
-		this.initializeAliasedFunctions([this], false);
-
-
-		for (var name in Object.keys(this.annotationTypes)) {
-			this.removeFromNamespace(name);
-			delete this.annotationTypes[name];
-		}
-
-
-		while (this.annotatedConstructs.length > 0) {
-			delete this.annotatedConstructs.pop()[this.frameworkPrefix];
-		}
-
-	};
-
-
-	this.removeFromNamespace = function(name) {
-		delete this.rootNamespace[name];
-	};
-
-
-	this.initialize(rootNamespace, namespacePrefix, frameworkPrefix);
+	__PACKAGE.install([__SELF]);
 }
 
 module.exports = Annotations;

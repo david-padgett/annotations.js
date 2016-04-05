@@ -1,5 +1,6 @@
 // annotations.js/src/test/javascript/test0-initialize.js
 
+var __APP_PREFIX = "$" + $$af.constructor.name;
 var systemAnnotations = Object.keys($$af.systemAnnotations).length;
 
 function getUnboundAnnotations() {
@@ -12,4 +13,8 @@ function boundAnnotations(size) {
 
 function unboundAnnotations(size) {
 	return (size == getUnboundAnnotations().length);
+}
+
+function getFrameworkState(object) {
+	return (object[__APP_PREFIX]);
 }
