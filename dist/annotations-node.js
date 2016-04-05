@@ -26,7 +26,7 @@
 function Annotations(rootNamespace, namespacePrefix) {
 
 
-	var __SELF = this;
+	var __THIS = this;
 	var __ROOT_NAMESPACE = rootNamespace;
 	var __NAMESPACE_PREFIX = namespacePrefix == null ? "$" : namespacePrefix;
 	var __APP_PREFIX = __NAMESPACE_PREFIX + this.constructor.name;
@@ -61,6 +61,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 		this.delegate = delegate;
 		this.containers = [];
+
 
 
 
@@ -127,7 +128,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 
 		if (__ROOT_NAMESPACE == null) {
-			throw new Error("Unable to initialize " + __SELF.constructor.name + ": No root namespace provided when instantiated.");
+			throw new Error("Unable to initialize " + __THIS.constructor.name + ": No root namespace provided when instantiated.");
 		}
 
 	}
@@ -140,24 +141,25 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 
 
+
 		this.install = function() {
-			for (var i in __SELF.systemAnnotationTypes) {
-				__SELF.systemAnnotations.push(__SELF.systemAnnotationTypes[i]);
-				__SELF.defineAnnotation(__SELF.systemAnnotationTypes[i]);
+			for (var i in __THIS.systemAnnotationTypes) {
+				__THIS.systemAnnotations.push(__THIS.systemAnnotationTypes[i]);
+				__THIS.defineAnnotation(__THIS.systemAnnotationTypes[i]);
 			}
 		};
 
 		this.uninstall = function() {
 
 
-			for (var name in Object.keys(__SELF.annotationTypes)) {
+			for (var name in Object.keys(__THIS.annotationTypes)) {
 				__PACKAGE.removeFromNamespace(name);
-				delete __SELF.annotationTypes[name];
+				delete __THIS.annotationTypes[name];
 			}
 
 
-			while (__SELF.annotatedConstructs.length > 0) {
-				delete __SELF.annotatedConstructs.pop()[__APP_PREFIX];
+			while (__THIS.annotatedConstructs.length > 0) {
+				delete __THIS.annotatedConstructs.pop()[__APP_PREFIX];
 			}
 
 		};
@@ -380,11 +382,11 @@ function Annotations(rootNamespace, namespacePrefix) {
 			annotation.constructor = annotationType;
 			annotationType.apply(annotation, arguments);
 
-			if (annotationType == __SELF.systemAnnotationTypes.PragmaAnnotation) {
-				__SELF.addPragma(annotation);
+			if (annotationType == __THIS.systemAnnotationTypes.PragmaAnnotation) {
+				__THIS.addPragma(annotation);
 			}
 			else {
-				__SELF.addUnboundAnnotation(annotation);
+				__THIS.addUnboundAnnotation(annotation);
 			}
 		};
 
@@ -456,7 +458,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 	};
 
 
-	__PACKAGE.install([__SELF]);
+	__PACKAGE.install([__THIS]);
 }
 
 module.exports = Annotations;

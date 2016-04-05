@@ -28,7 +28,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 	//** Constants
 
-	var __SELF = this;
+	var __THIS = this;
 	var __ROOT_NAMESPACE = rootNamespace;
 	var __NAMESPACE_PREFIX = namespacePrefix == null ? "$" : namespacePrefix;
 	var __APP_PREFIX = __NAMESPACE_PREFIX + this.constructor.name;
@@ -70,6 +70,8 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 		this.delegate = delegate;
 		this.containers = [];
+
+		//** Instance Initializer
 
 		//** Instance Operations
 
@@ -148,7 +150,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 		//** Constructor
 
 		if (__ROOT_NAMESPACE == null) {
-			throw new Error("Unable to initialize " + __SELF.constructor.name + ": No root namespace provided when instantiated.");
+			throw new Error("Unable to initialize " + __THIS.constructor.name + ": No root namespace provided when instantiated.");
 		}
 
 	}
@@ -165,12 +167,14 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 		//** Instance Variables
 
+		//** Instance Initializer
+
 		//** Instance Operations
 
 		this.install = function() {
-			for (var i in __SELF.systemAnnotationTypes) {
-				__SELF.systemAnnotations.push(__SELF.systemAnnotationTypes[i]);
-				__SELF.defineAnnotation(__SELF.systemAnnotationTypes[i]);
+			for (var i in __THIS.systemAnnotationTypes) {
+				__THIS.systemAnnotations.push(__THIS.systemAnnotationTypes[i]);
+				__THIS.defineAnnotation(__THIS.systemAnnotationTypes[i]);
 			}
 		};
 
@@ -179,15 +183,15 @@ function Annotations(rootNamespace, namespacePrefix) {
 			// Delete all defined annotations and remove the corresponding
 			// __DefinedAnnotationeHandler from the global namespace.
 
-			for (var name in Object.keys(__SELF.annotationTypes)) {
+			for (var name in Object.keys(__THIS.annotationTypes)) {
 				__PACKAGE.removeFromNamespace(name);
-				delete __SELF.annotationTypes[name];
+				delete __THIS.annotationTypes[name];
 			}
 
 			// Remove framework state from all annotated constructs.
 
-			while (__SELF.annotatedConstructs.length > 0) {
-				delete __SELF.annotatedConstructs.pop()[__APP_PREFIX];
+			while (__THIS.annotatedConstructs.length > 0) {
+				delete __THIS.annotatedConstructs.pop()[__APP_PREFIX];
 			}
 
 		};
@@ -260,8 +264,9 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 	};
 
-	//** Instance Operations
+	//** Instance Initializer
 
+	//** Instance Operations
 
 	// Adds the specified construct to the list of all annotated constructs,
 	// duplicates and null constructs are ignored.
@@ -448,11 +453,11 @@ function Annotations(rootNamespace, namespacePrefix) {
 			annotation.constructor = annotationType;
 			annotationType.apply(annotation, arguments);
 
-			if (annotationType == __SELF.systemAnnotationTypes.PragmaAnnotation) {
-				__SELF.addPragma(annotation);
+			if (annotationType == __THIS.systemAnnotationTypes.PragmaAnnotation) {
+				__THIS.addPragma(annotation);
 			}
 			else {
-				__SELF.addUnboundAnnotation(annotation);
+				__THIS.addUnboundAnnotation(annotation);
 			}
 		};
 
@@ -532,5 +537,5 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 	//** Constructor
 
-	__PACKAGE.install([__SELF]);
+	__PACKAGE.install([__THIS]);
 }
