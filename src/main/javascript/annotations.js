@@ -31,16 +31,16 @@ function Annotations(rootNamespace, namespacePrefix) {
 	var __THIS = this;
 	var __ROOT_NAMESPACE = rootNamespace;
 	var __NAMESPACE_PREFIX = namespacePrefix == null ? "$" : namespacePrefix;
-	var __APP_PREFIX = __NAMESPACE_PREFIX + this.constructor.name;
-	var __PACKAGE = new __Package(new __PackageDelegate());
+	var __MODULE_PREFIX = __NAMESPACE_PREFIX + this.constructor.name;
+	var __MODULE = new __Module(new __ModuleDelegate());
 
 	//** Functions
 
 	// Initializes the specified construct.
 
 	function __initializeConstruct(construct) {
-		if (construct != null && construct[__APP_PREFIX] == null) {
-			construct[__APP_PREFIX] = new AnnotationsFrameworkState();
+		if (construct != null && construct[__MODULE_PREFIX] == null) {
+			construct[__MODULE_PREFIX] = new AnnotationsFrameworkState();
 		}
 	};
 
@@ -49,7 +49,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 			return (false);
 		}
 		for (var i = 0; i < annotations.length; ++i) {
-			if (!annotations[i].constructor[__APP_PREFIX].matchesType(annotationType)) {
+			if (!annotations[i].constructor[__MODULE_PREFIX].matchesType(annotationType)) {
 				return (false);
 			}
 		}
@@ -58,7 +58,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 	//** Inner Classes
 
-	function __Package(delegate) {
+	function __Module(delegate) {
 
 		//** Constants
 
@@ -68,8 +68,8 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 		//** Instance Variables
 
-		this.delegate = delegate;
-		this.containers = [];
+		this.__delegate = delegate;
+		this.__containers = [];
 
 		//** Instance Initializer
 
@@ -85,7 +85,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 		// Invokes an operation implemented by the delegate.
 
 		this.invokeDelegate = function(operation) {
-			if (this.delegate != null && this.delegate[operation] != null && this.delegate[operation].constructor === Function) {
+			if (this.__delegate != null && this.__delegate[operation] != null && this.__delegate[operation].constructor === Function) {
 				delegate[operation].apply(delegate, Array.prototype.slice.call(arguments, 1));
 			}
 		}
@@ -94,7 +94,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 		// is invoked within the namespace provided via the main constructor.
 
 		this.initializeDispatcher = function(container, api) {
-			var dispatcher = function __PackageApiDispatcher() {
+			var dispatcher = function __ModuleApiDispatcher() {
 				var args = Array.prototype.slice.call(arguments, 0);
 				return (api.apply(container, args));
 			};
@@ -105,26 +105,39 @@ function Annotations(rootNamespace, namespacePrefix) {
 		// provided namespace.
 
 		this.install = function install(containers) {
-			this.containers = containers;
-			this.manageAliasedFunctions(this.containers, true);
+			this.__containers = containers;
+			this.manageAliases(this.__containers, true);
 			this.invokeDelegate(arguments.callee.name);
 		};
 
-		// Add or remove named functions within the specified containers to the
-		// namespace provided via the main constructor.
+		// Add or remove named functions and values within the specified
+		// containers to the namespace provided via the main constructor.
 
-		this.manageAliasedFunctions = function(containers, addFunctions) {
+		this.manageAliases = function(containers, addFunctions) {
 			for (var i = 0; i < containers.length; ++i) {
 				var container = containers[i];
 				for (var j in container) {
-					if (container[j] != null && container[j].constructor === Function && container[j].name.length > 0) {
-						var api = container[j];
-						var namespaceName = __NAMESPACE_PREFIX + container[j].name;
-						if (addFunctions) {
-							this.addToNamespace(namespaceName, this.initializeDispatcher(container, api));
+					if (container[j] != null) {
+						var name = null;
+						var value = null;
+						if (container[j].constructor !== Function && j[0] != "_") {
+							name = __NAMESPACE_PREFIX + j;
+							value = container[j];
 						}
 						else {
-							this.removeFromNamespace(namespaceName);
+							if (container[j].constructor === Function && container[j].name.length > 0) {
+								var api = container[j];
+								var name = __NAMESPACE_PREFIX + container[j].name;
+								value = this.initializeDispatcher(container, api);
+							}
+						}
+						if (name != null && value != null) {
+							if (addFunctions) {
+								this.addToNamespace(name, value);
+							}
+							else {
+								this.removeFromNamespace(name);
+							}
 						}
 					}
 				}
@@ -144,7 +157,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 		this.uninstall = function uninstall() {
 			this.invokeDelegate(arguments.callee.name);
-			this.manageAliasedFunctions(this.containers, false);
+			this.manageAliases(this.__containers, false);
 		};
 
 		//** Constructor
@@ -155,9 +168,9 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 	}
 
-	// __PACKAGE delegate.
+	// __MODULE delegate.
 
-	function __PackageDelegate() {
+	function __ModuleDelegate() {
 
 		//** Constants
 
@@ -184,14 +197,14 @@ function Annotations(rootNamespace, namespacePrefix) {
 			// __DefinedAnnotationeHandler from the global namespace.
 
 			for (var name in Object.keys(__THIS.annotationTypes)) {
-				__PACKAGE.removeFromNamespace(name);
+				__MODULE.removeFromNamespace(name);
 				delete __THIS.annotationTypes[name];
 			}
 
 			// Remove framework state from all annotated constructs.
 
 			while (__THIS.annotatedConstructs.length > 0) {
-				delete __THIS.annotatedConstructs.pop()[__APP_PREFIX];
+				delete __THIS.annotatedConstructs.pop()[__MODULE_PREFIX];
 			}
 
 		};
@@ -311,7 +324,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 		// System annotations are added directly to the cache.
 
 		if (!systemAnnotation) {
-			var frameworkState = annotation.constructor[__APP_PREFIX];
+			var frameworkState = annotation.constructor[__MODULE_PREFIX];
 
 			// Type annotations cannot be combined with non-type annotations.
 
@@ -388,7 +401,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 		// Initialize the construct for use by the framework.
 
 		__initializeConstruct(construct);
-		construct[__APP_PREFIX].annotations = this.unboundAnnotations;
+		construct[__MODULE_PREFIX].annotations = this.unboundAnnotations;
 		this.clearUnboundAnnotations();
 	};
 
@@ -407,7 +420,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 		var prototype = construct.constructor == Function ? construct.prototype : construct;
 		for (var i in prototype) {
 			var operation = prototype[i];
-			if (operation.constructor == Function && operation[__APP_PREFIX] == null) {
+			if (operation.constructor == Function && operation[__MODULE_PREFIX] == null) {
 				this.annotateConstruct(operation);
 			}
 		}
@@ -465,12 +478,12 @@ function Annotations(rootNamespace, namespacePrefix) {
 		// annotation.
 
 		this.annotateConstruct(annotationType);
-		annotationType[__APP_PREFIX].initialize(namespaceName, annotationHandler);
+		annotationType[__MODULE_PREFIX].initialize(namespaceName, annotationHandler);
 
 		// Add the handler for the defined annotation to the global namespace.
 
 		this.annotationTypes[namespaceName] = annotationHandler;
-		__PACKAGE.addToNamespace(namespaceName, annotationHandler);
+		__MODULE.addToNamespace(namespaceName, annotationHandler);
 	};
 
 	// Retrieves the list of all annotated types and objects.
@@ -506,7 +519,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 	};
 
 	this.getAnnotations = function GetAnnotations(construct) {
-		var state = construct[__APP_PREFIX];
+		var state = construct[__MODULE_PREFIX];
 		return (state != null ? state.annotations : null);
 	};
 
@@ -523,7 +536,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 	// present in the arguments list.
 
 	this.hasAnnotation = function HasAnnotation(construct, annotationType) {
-		var frameworkState = construct[__APP_PREFIX];
+		var frameworkState = construct[__MODULE_PREFIX];
 		if (frameworkState == null || frameworkState.annotations.length == 0) {
 			return (false);
 		}
@@ -537,5 +550,5 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 	//** Constructor
 
-	__PACKAGE.install([__THIS]);
+	__MODULE.install([__THIS]);
 }
