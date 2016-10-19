@@ -1,0 +1,14 @@
+
+{
+	"group" : "david-padgett",
+	"name" : "annotations.js",
+	"version" : "1.2.0",
+	"description" : "annotations.js - a type, method, and object annotations-enabling library for JavaScript.",
+	"url" : "https://github.com/david-padgett/anotations.js",
+	"components" : [
+		"dist/annotations.js",
+		"dist/annotations-node.js"
+	],
+	"dependencies" : [
+	]
+}

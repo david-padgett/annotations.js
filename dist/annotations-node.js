@@ -1,7 +1,9 @@
-/*
+"use strict";
+
+/**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 David Padgett/Summit Street, Inc.
+ * Copyright (c) 2016 David Padgett/Summit Street, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,77 +24,51 @@
  * SOFTWARE.
  */
 
+/* global */
+/* eslint-disable no-unused-vars */
 
-function Annotations(rootNamespace, namespacePrefix) {
+/**
+ * This function implements a singleton type (e.g: a service) that can install
+ * named operations into a namespace.  The operation names are optionally
+ * prefixed to prevent collisions with other functions.
+ */
 
+function __Service(rootNamespace, namespacePrefix, serviceDelegate) {
 
 	var __THIS = this;
 	var __ROOT_NAMESPACE = rootNamespace;
 	var __NAMESPACE_PREFIX = namespacePrefix == null ? "$" : namespacePrefix;
-	var __MODULE_PREFIX = __NAMESPACE_PREFIX + this.constructor.name;
-	var __MODULE = new __Module(new __ModuleDelegate());
+	var __SERVICE_MANAGER = new __ServiceManager(serviceDelegate == null ? __THIS : serviceDelegate);
 
-
-
-	function __initializeConstruct(construct) {
-		if (construct != null && construct[__MODULE_PREFIX] == null) {
-			construct[__MODULE_PREFIX] = new AnnotationsFrameworkState();
-		}
-	};
-
-	function __matchesAnnotationType(annotations, annotationType) {
-		if (annotations.length == 0) {
-			return (false);
-		}
-		for (var i = 0; i < annotations.length; ++i) {
-			if (!annotations[i].constructor[__MODULE_PREFIX].matchesType(annotationType)) {
-				return (false);
-			}
-		}
-		return (true);
-	};
-
-
-	function __Module(delegate) {
-
-
-
-
+	function __ServiceManager(delegate) {
 
 		this.__delegate = delegate;
 		this.__containers = [];
 
-
-
-
 		this.addToNamespace = function addToNamespace(name, value) {
 			__ROOT_NAMESPACE[name] = value;
-			this.invokeDelegate(arguments.callee.name);
+			this.invokeDelegate("addToNamespace");
 		};
-
 
 		this.invokeDelegate = function(operation) {
 			if (this.__delegate != null && this.__delegate[operation] != null && this.__delegate[operation].constructor === Function) {
 				delegate[operation].apply(delegate, Array.prototype.slice.call(arguments, 1));
 			}
-		}
-
+		};
 
 		this.initializeDispatcher = function(container, api) {
-			var dispatcher = function __ModuleApiDispatcher() {
+			var dispatcher = function __ServiceManagerApiDispatcher() {
 				var args = Array.prototype.slice.call(arguments, 0);
 				return (api.apply(container, args));
 			};
 			return (dispatcher);
 		};
 
-
 		this.install = function install(containers) {
 			this.__containers = containers;
 			this.manageAliases(this.__containers, true);
-			this.invokeDelegate(arguments.callee.name);
+			this.invokeDelegate("install");
 		};
-
 
 		this.manageAliases = function(containers, addFunctions) {
 			for (var i = 0; i < containers.length; ++i) {
@@ -108,7 +84,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 						else {
 							if (container[j].constructor === Function && container[j].name.length > 0) {
 								var api = container[j];
-								var name = __NAMESPACE_PREFIX + container[j].name;
+								name = __NAMESPACE_PREFIX + container[j].name;
 								value = this.initializeDispatcher(container, api);
 							}
 						}
@@ -125,20 +101,17 @@ function Annotations(rootNamespace, namespacePrefix) {
 			}
 		};
 
-
 		this.removeFromNamespace = function removeFromNamespace(name) {
-			this.invokeDelegate(arguments.callee.name);
+			this.invokeDelegate("removeFromNamespace");
 			if (!(delete __ROOT_NAMESPACE[name])) {
 				__ROOT_NAMESPACE[name] = null;
 			}
 		};
 
-
 		this.uninstall = function uninstall() {
-			this.invokeDelegate(arguments.callee.name);
+			this.invokeDelegate("uninstall");
 			this.manageAliases(this.__containers, false);
 		};
-
 
 		if (__ROOT_NAMESPACE == null) {
 			throw new Error("Unable to initialize " + __THIS.constructor.name + ": No root namespace provided when instantiated.");
@@ -146,14 +119,43 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 	}
 
+	this._getServiceManager = function() {
+		return (__SERVICE_MANAGER);
+	};
 
-	function __ModuleDelegate() {
+	__SERVICE_MANAGER.install([__THIS]);
+	return (__THIS);
+}
 
+/* global */
+/* eslint-disable no-console, no-unused-vars */
 
+function Annotations(rootNamespace, namespacePrefix) {
 
+	var __THIS = this;
+	var __ROOT_NAMESPACE = rootNamespace;
+	var __NAMESPACE_PREFIX = namespacePrefix == null ? "$" : namespacePrefix;
+	var __SERVICE_PREFIX = __NAMESPACE_PREFIX + this.constructor.name;
 
+	function __initializeConstruct(construct) {
+		if (construct != null && construct[__SERVICE_PREFIX] == null) {
+			construct[__SERVICE_PREFIX] = new AnnotationsFrameworkState();
+		}
+	}
 
+	function __matchesAnnotationType(annotations, annotationType) {
+		if (annotations.length == 0) {
+			return (false);
+		}
+		for (var i = 0; i < annotations.length; ++i) {
+			if (!annotations[i].constructor[__SERVICE_PREFIX].matchesType(annotationType)) {
+				return (false);
+			}
+		}
+		return (true);
+	}
 
+	function __ServiceDelegate() {
 
 		this.install = function() {
 			for (var i in __THIS.systemAnnotationTypes) {
@@ -164,19 +166,16 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 		this.uninstall = function() {
 
-
 			for (var name in Object.keys(__THIS.annotationTypes)) {
-				__MODULE.removeFromNamespace(name);
+				__THIS._getServiceManager().removeFromNamespace(name);
 				delete __THIS.annotationTypes[name];
 			}
 
-
 			while (__THIS.annotatedConstructs.length > 0) {
-				delete __THIS.annotatedConstructs.pop()[__MODULE_PREFIX];
+				delete __THIS.annotatedConstructs.pop()[__SERVICE_PREFIX];
 			}
 
 		};
-
 
 	}
 
@@ -203,8 +202,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 			return (true);
 		};
 
-	};
-
+	}
 
 	this.annotationTypes = {};
 	this.annotatedConstructs = [];
@@ -215,18 +213,14 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 	this.systemAnnotationTypes = {
 
-
 		MethodAnnotation: function MethodAnnotation() {
 		},
-
 
 		ObjectAnnotation: function ObjectAnnotation() {
 		},
 
-
 		TypeAnnotation: function TypeAnnotation() {
 		},
-
 
 		PragmaAnnotation: function Pragma(name, value) {
 			this.name = name;
@@ -234,9 +228,6 @@ function Annotations(rootNamespace, namespacePrefix) {
 		}
 
 	};
-
-
-
 
 	this.addAnnotatedConstruct = function(construct) {
 		if (construct != null && this.annotatedConstructs.indexOf(construct) == -1) {
@@ -261,9 +252,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 		}
 	};
 
-
 	this.addUnboundAnnotation = function(annotation) {
-
 
 		var systemAnnotation = this.systemAnnotations.indexOf(annotation.constructor) != -1;
 		if (this.unboundAnnotations.length > 0 && systemAnnotation !== this.unboundAnnotationsAreSystemAnnotations) {
@@ -272,10 +261,8 @@ function Annotations(rootNamespace, namespacePrefix) {
 		}
 		this.unboundAnnotationsAreSystemAnnotations = systemAnnotation;
 
-
 		if (!systemAnnotation) {
-			var frameworkState = annotation.constructor[__MODULE_PREFIX];
-
+			var frameworkState = annotation.constructor[__SERVICE_PREFIX];
 
 			if (__matchesAnnotationType(this.unboundAnnotations, this.systemAnnotationTypes.TypeAnnotation)) {
 				if (!frameworkState.matchesType(this.systemAnnotationTypes.TypeAnnotation)) {
@@ -285,12 +272,10 @@ function Annotations(rootNamespace, namespacePrefix) {
 			}
 			else {
 
-
 				if (__matchesAnnotationType(this.unboundAnnotations, this.systemAnnotationTypes.MethodAnnotation)) {
 					this.annotateMethods();
 				}
 				else {
-
 
 					if (__matchesAnnotationType(this.unboundAnnotations, this.systemAnnotationTypes.ObjectAnnotation)) {
 						if (!frameworkState.matchesType(this.systemAnnotationTypes.ObjectAnnotation)) {
@@ -309,23 +294,19 @@ function Annotations(rootNamespace, namespacePrefix) {
 		this.unboundAnnotations.push(annotation);
 	};
 
-
 	this.annotate = function Annotate(construct) {
 		if (construct != null) {
 			if (construct.constructor == Function) {
 				if (this.unboundAnnotationsAreSystemAnnotations) {
 
-
 					this.defineAnnotation(construct);
 				}
 				else {
-
 
 					this.annotateConstruct(construct);
 				}
 			}
 			else {
-
 
 				this.annotateConstruct(construct);
 				this.annotateMethods();
@@ -335,15 +316,12 @@ function Annotations(rootNamespace, namespacePrefix) {
 		return (construct);
 	};
 
-
 	this.annotateConstruct = function(construct) {
 
-
 		__initializeConstruct(construct);
-		construct[__MODULE_PREFIX].annotations = this.unboundAnnotations;
+		construct[__SERVICE_PREFIX].annotations = this.unboundAnnotations;
 		this.clearUnboundAnnotations();
 	};
-
 
 	this.annotateMethods = function() {
 		var construct = this.annotatedConstructs.length == 0 ? null : this.annotatedConstructs[this.annotatedConstructs.length - 1];
@@ -354,7 +332,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 		var prototype = construct.constructor == Function ? construct.prototype : construct;
 		for (var i in prototype) {
 			var operation = prototype[i];
-			if (operation.constructor == Function && operation[__MODULE_PREFIX] == null) {
+			if (operation.constructor == Function && operation[__SERVICE_PREFIX] == null) {
 				this.annotateConstruct(operation);
 			}
 		}
@@ -377,7 +355,6 @@ function Annotations(rootNamespace, namespacePrefix) {
 		return (obj);
 	};
 
-
 	this.defineAnnotation = function(annotationType) {
 
 		var prefix = this.getPragmaValue("AnnotationsPrefix");
@@ -387,9 +364,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 			throw new Error("Unable to define annotation.  The annotation type has already been defined.");
 		}
 
-
 		var annotationHandler = function __DefinedAnnotationeHandler() {
-
 
 			var annotation = {};
 			annotation.constructor = annotationType;
@@ -403,15 +378,12 @@ function Annotations(rootNamespace, namespacePrefix) {
 			}
 		};
 
-
 		this.annotateConstruct(annotationType);
-		annotationType[__MODULE_PREFIX].initialize(namespaceName, annotationHandler);
-
+		annotationType[__SERVICE_PREFIX].initialize(namespaceName, annotationHandler);
 
 		this.annotationTypes[namespaceName] = annotationHandler;
-		__MODULE.addToNamespace(namespaceName, annotationHandler);
+		__THIS._getServiceManager().addToNamespace(namespaceName, annotationHandler);
 	};
-
 
 	this.getAnnotatedConstructs = function GetAnnotatedConstructs() {
 		var constructs = [];
@@ -419,11 +391,11 @@ function Annotations(rootNamespace, namespacePrefix) {
 		for (var i = 0; i < arguments.length; ++i) {
 			annotationTypes.push(arguments[i]);
 		}
-		for (var i = 0; i < this.annotatedConstructs.length; ++i) {
-			var construct = this.annotatedConstructs[i];
+		for (var j = 0; j < this.annotatedConstructs.length; ++j) {
+			var construct = this.annotatedConstructs[j];
 			if (this.systemAnnotations.indexOf(construct) == -1) {
-				for (var j = 0; j < annotationTypes.length; ++j) {
-					if (this.hasAnnotation(construct, annotationTypes[j])) {
+				for (var k = 0; k < annotationTypes.length; ++k) {
+					if (this.hasAnnotation(construct, annotationTypes[k])) {
 						constructs.push(construct);
 						break;
 					}
@@ -432,7 +404,6 @@ function Annotations(rootNamespace, namespacePrefix) {
 		}
 		return (constructs);
 	};
-
 
 	this.getAnnotationTypes = function GetAnnotationTypes() {
 		var annotationTypes = [];
@@ -443,7 +414,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 	};
 
 	this.getAnnotations = function GetAnnotations(construct) {
-		var state = construct[__MODULE_PREFIX];
+		var state = construct[__SERVICE_PREFIX];
 		return (state != null ? state.annotations : null);
 	};
 
@@ -456,9 +427,8 @@ function Annotations(rootNamespace, namespacePrefix) {
 		return (null);
 	};
 
-
 	this.hasAnnotation = function HasAnnotation(construct, annotationType) {
-		var frameworkState = construct[__MODULE_PREFIX];
+		var frameworkState = construct[__SERVICE_PREFIX];
 		if (frameworkState == null || frameworkState.annotations.length == 0) {
 			return (false);
 		}
@@ -470,8 +440,8 @@ function Annotations(rootNamespace, namespacePrefix) {
 		return (false);
 	};
 
-
-	__MODULE.install([__THIS]);
+	__Service.apply(this, [rootNamespace, namespacePrefix, new __ServiceDelegate()]);
 }
 
 module.exports = Annotations;
+

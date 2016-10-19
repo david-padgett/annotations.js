@@ -6,7 +6,7 @@ $$test.message("test4-internal", "InternalMethod: Annotate type and methods decl
 
 //$DescriptiveType("InternalMethod");
 
-$$test.assertTrue("InternalMethod: 1 pending annotations", function() {return unboundAnnotations(1)});
+$$test.assertTrue("InternalMethod: 1 pending annotations", function() {return unboundAnnotations(1);});
 
 function InternalMethod() {
 //	$Annotate(this);
@@ -24,25 +24,25 @@ function InternalMethod() {
 	};
 }
 
-$$test.assertTrue("InternalMethod: 1 pending annotations", function() {return unboundAnnotations(1)});
-$$test.assertTrue("InternalMethod: type is not annotated", function() {return getFrameworkState(InternalMethod) == null});
+$$test.assertTrue("InternalMethod: 1 pending annotations", function() {return unboundAnnotations(1);});
+$$test.assertTrue("InternalMethod: type is not annotated", function() {return getFrameworkState(InternalMethod) == null;});
 
 $Annotate(InternalMethod);
 
-$$test.assertTrue("InternalMethod: type is annotated", function() {return getFrameworkState(InternalMethod) != null});
-$$test.assertTrue("InternalMethod: type has correct number of annotations", function() {return getFrameworkState(InternalMethod).annotations.length == 1});
-$$test.assertTrue("InternalMethod: type has correct 1st annotation", function() {return getFrameworkState(InternalMethod).annotations[0].constructor == DescriptiveType});
-$$test.assertTrue("InternalMethod: no pending annotations", function() {return unboundAnnotations(0)});
+$$test.assertTrue("InternalMethod: type is annotated", function() {return getFrameworkState(InternalMethod) != null;});
+$$test.assertTrue("InternalMethod: type has correct number of annotations", function() {return getFrameworkState(InternalMethod).annotations.length == 1;});
+$$test.assertTrue("InternalMethod: type has correct 1st annotation", function() {return getFrameworkState(InternalMethod).annotations[0].constructor == DescriptiveType;});
+$$test.assertTrue("InternalMethod: no pending annotations", function() {return unboundAnnotations(0);});
 
 //var object = new InternalMethod();
 var object = $CreateAnnotatedInstance(InternalMethod);
 
-$$test.assertTrue("InternalMethod: operation0 is annotated", function() {return getFrameworkState(object.operation0) != null});
-$$test.assertTrue("InternalMethod: operation0 has correct number of annotations", function() {return getFrameworkState(object.operation0).annotations.length == 0});
-$$test.assertTrue("InternalMethod: operation1 is annotated", function() {return getFrameworkState(object.operation1) != null});
-$$test.assertTrue("InternalMethod: operation1 has correct number of annotations", function() {return getFrameworkState(object.operation1).annotations.length == 1});
-$$test.assertTrue("InternalMethod: operation1 has correct 1st annotation", function() {return getFrameworkState(object.operation1).annotations[0].constructor == PublicMethod});
-$$test.assertTrue("InternalMethod: operation2 is annotated", function() {return getFrameworkState(object.operation2) != null});
-$$test.assertTrue("InternalMethod: operation2 has correct number of annotations", function() {return getFrameworkState(object.operation2).annotations.length == 2});
-$$test.assertTrue("InternalMethod: operation2 has correct 1st annotation", function() {return getFrameworkState(object.operation2).annotations[0].constructor == StaticMethod});
-$$test.assertTrue("InternalMethod: operation2 has correct 2nd annotation", function() {return getFrameworkState(object.operation2).annotations[1].constructor == FinalMethod});
+$$test.assertTrue("InternalMethod: operation0 is annotated", function() {return getFrameworkState(object.operation0) != null;});
+$$test.assertTrue("InternalMethod: operation0 has correct number of annotations", function() {return getFrameworkState(object.operation0).annotations.length == 0;});
+$$test.assertTrue("InternalMethod: operation1 is annotated", function() {return getFrameworkState(object.operation1) != null;});
+$$test.assertTrue("InternalMethod: operation1 has correct number of annotations", function() {return getFrameworkState(object.operation1).annotations.length == 1;});
+$$test.assertTrue("InternalMethod: operation1 has correct 1st annotation", function() {return getFrameworkState(object.operation1).annotations[0].constructor == PublicMethod;});
+$$test.assertTrue("InternalMethod: operation2 is annotated", function() {return getFrameworkState(object.operation2) != null;});
+$$test.assertTrue("InternalMethod: operation2 has correct number of annotations", function() {return getFrameworkState(object.operation2).annotations.length == 2;});
+$$test.assertTrue("InternalMethod: operation2 has correct 1st annotation", function() {return getFrameworkState(object.operation2).annotations[0].constructor == StaticMethod;});
+$$test.assertTrue("InternalMethod: operation2 has correct 2nd annotation", function() {return getFrameworkState(object.operation2).annotations[1].constructor == FinalMethod;});

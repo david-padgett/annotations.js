@@ -21,38 +21,59 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+#** makestuff/src/global/init_rule.mak
+
+REPO_DIR=.makestuff
+MAKESTUFF_REPO=github.com/SummitStreet/makestuff@master.git
+MAKESTUFF=$(shell python -c 'import os, re, sys ; R, V = re.match(r"(.+?)(@.*)?.git", sys.argv[2]).groups() ; print os.sep.join([sys.argv[1], R, V[1:]])' $(REPO_DIR) $(MAKESTUFF_REPO))
+
+# The default target is 'all'.
+
+all :
+
+### Initialize/bootstrap makestuff environment
+### usage: make [-f <makefile>] init [REPO_DIR=<external_repo_base_directory>]
+
+makestuff_init :
+	@rm -fr $(MAKESTUFF)
+	@python -c 'import os, re, sys ; C = "git clone --branch {1} https://{0}.git {2}" ; R, V = re.match(r"(.+?)(@.*)?.git", sys.argv[2]).groups() ; D = os.sep.join([sys.argv[1], R, V[1:]]) ; None if os.path.isdir(D) else os.system(C.format(R, V[1:], D))' $(REPO_DIR) $(MAKESTUFF_REPO) >/dev/null 2>/dev/null
+	@rm -fr $(REPO_DIR)/.tmp ; mv $(MAKESTUFF)/dist $(REPO_DIR)/.tmp ; rm -fr $(MAKESTUFF) ; mv $(REPO_DIR)/.tmp $(MAKESTUFF)
+
+.PHONY : all makestuff_init
+
 # annotations.js/annotations.mak
 
-MAKEFILE_DIR=node_modules/etc.mak/dist
-
-include $(MAKEFILE_DIR)/javascript_vars.mak
+-include $(MAKESTUFF)/javascript_vars.mak
 
 BUILD_DEPENDENCIES=\
-	github.com/david-padgett/fn-test.js.git
+	github.com/david-padgett/fn-test.js.git.npm \
+	github.com/SummitStreet/launchpad@master.git
 
 BUILD_TARGETS=\
-	annotations.js \
-	annotations-node.js
+	$(DIST_DIR)/annotations.js \
+	$(DIST_DIR)/annotations-node.js
 
-TEST_TARGETS=\
-	annotations-node-tests.js
+JAVASCRIPT_TEST_COMPONENTS=\
+	$(DIST_DIR)/annotations-node-tests.js
 
-annotations.js : \
-	$(SOURCE_DIR)/main/javascript/annotations.js
+$(DIST_DIR)/annotations.js : \
+	$(REPO_DIR)/github.com/SummitStreet/launchpad/master/javascript/service.js \
+	$(SRC_DIR)/main/javascript/annotations.js
 
-annotations-node.js : \
-	$(SOURCE_DIR)/main/javascript/annotations-node-prefix.js \
-	$(SOURCE_DIR)/main/javascript/annotations.js \
-	$(SOURCE_DIR)/main/javascript/annotations-node-suffix.js
+$(DIST_DIR)/annotations-node.js : \
+	$(SRC_DIR)/main/javascript/annotations-node-prefix.js \
+	$(REPO_DIR)/github.com/SummitStreet/launchpad/master/javascript/service.js \
+	$(SRC_DIR)/main/javascript/annotations.js \
+	$(SRC_DIR)/main/javascript/annotations-node-suffix.js
 
-annotations-node-tests.js : \
-	$(SOURCE_DIR)/test/javascript/node-prefix.js \
-	$(SOURCE_DIR)/test/javascript/test0-initialize.js \
-	$(SOURCE_DIR)/test/javascript/test1-annotate.js \
-	$(SOURCE_DIR)/test/javascript/test2-type.js \
-	$(SOURCE_DIR)/test/javascript/test3-prototype.js \
-	$(SOURCE_DIR)/test/javascript/test4-internal.js \
-	$(SOURCE_DIR)/test/javascript/test5-literal.js \
-	$(SOURCE_DIR)/test/javascript/node-suffix.js
+$(DIST_DIR)/annotations-node-tests.js : \
+	$(SRC_DIR)/test/javascript/node-prefix.js \
+	$(SRC_DIR)/test/javascript/test0-initialize.js \
+	$(SRC_DIR)/test/javascript/test1-annotate.js \
+	$(SRC_DIR)/test/javascript/test2-type.js \
+	$(SRC_DIR)/test/javascript/test3-prototype.js \
+	$(SRC_DIR)/test/javascript/test4-internal.js \
+	$(SRC_DIR)/test/javascript/test5-literal.js \
+	$(SRC_DIR)/test/javascript/node-suffix.js
 
-include $(MAKEFILE_DIR)/javascript_rules.mak
+-include $(MAKESTUFF)/javascript_rules.mak
