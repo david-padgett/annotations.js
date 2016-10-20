@@ -158,21 +158,21 @@ function Annotations(rootNamespace, namespacePrefix) {
 	function __ServiceDelegate() {
 
 		this.install = function() {
-			for (var i in __THIS.systemAnnotationTypes) {
-				__THIS.systemAnnotations.push(__THIS.systemAnnotationTypes[i]);
-				__THIS.defineAnnotation(__THIS.systemAnnotationTypes[i]);
+			for (var i in __THIS.__systemAnnotationTypes) {
+				__THIS.__systemAnnotations.push(__THIS.__systemAnnotationTypes[i]);
+				__THIS.defineAnnotation(__THIS.__systemAnnotationTypes[i]);
 			}
 		};
 
 		this.uninstall = function() {
 
-			for (var name in Object.keys(__THIS.annotationTypes)) {
+			for (var name in Object.keys(__THIS.__annotationTypes)) {
 				__THIS._getServiceManager().removeFromNamespace(name);
-				delete __THIS.annotationTypes[name];
+				delete __THIS.__annotationTypes[name];
 			}
 
-			while (__THIS.annotatedConstructs.length > 0) {
-				delete __THIS.annotatedConstructs.pop()[__SERVICE_PREFIX];
+			while (__THIS.__annotatedConstructs.length > 0) {
+				delete __THIS.__annotatedConstructs.pop()[__SERVICE_PREFIX];
 			}
 
 		};
@@ -204,14 +204,14 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 	}
 
-	this.annotationTypes = {};
-	this.annotatedConstructs = [];
-	this.systemAnnotations = [];
-	this.unboundAnnotations = [];
-	this.unboundAnnotationsAreSystemAnnotations = false;
-	this.pragmas = {};
+	this.__annotationTypes = {};
+	this.__annotatedConstructs = [];
+	this.__systemAnnotations = [];
+	this.__unboundAnnotations = [];
+	this.__unboundAnnotationsAreSystemAnnotations = false;
+	this.__pragmas = {};
 
-	this.systemAnnotationTypes = {
+	this.__systemAnnotationTypes = {
 
 		MethodAnnotation: function MethodAnnotation() {
 		},
@@ -230,8 +230,8 @@ function Annotations(rootNamespace, namespacePrefix) {
 	};
 
 	this.addAnnotatedConstruct = function(construct) {
-		if (construct != null && this.annotatedConstructs.indexOf(construct) == -1) {
-			this.annotatedConstructs.push(construct);
+		if (construct != null && this.__annotatedConstructs.indexOf(construct) == -1) {
+			this.__annotatedConstructs.push(construct);
 		}
 	};
 
@@ -245,40 +245,40 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 	this.addPragma = function(pragma) {
 		if (pragma.name == null) {
-			this.pragmas = {};
+			this.__pragmas = {};
 		}
 		else {
-			this.pragmas[pragma.name] = pragma.value;
+			this.__pragmas[pragma.name] = pragma.value;
 		}
 	};
 
 	this.addUnboundAnnotation = function(annotation) {
 
-		var systemAnnotation = this.systemAnnotations.indexOf(annotation.constructor) != -1;
-		if (this.unboundAnnotations.length > 0 && systemAnnotation !== this.unboundAnnotationsAreSystemAnnotations) {
+		var systemAnnotation = this.__systemAnnotations.indexOf(annotation.constructor) != -1;
+		if (this.__unboundAnnotations.length > 0 && systemAnnotation !== this.__unboundAnnotationsAreSystemAnnotations) {
 			this.clearUnboundAnnotations();
 			throw new Error("Unable to add unbound annotations:  System and non-system annotation types cannot be combined.");
 		}
-		this.unboundAnnotationsAreSystemAnnotations = systemAnnotation;
+		this.__unboundAnnotationsAreSystemAnnotations = systemAnnotation;
 
 		if (!systemAnnotation) {
 			var frameworkState = annotation.constructor[__SERVICE_PREFIX];
 
-			if (__matchesAnnotationType(this.unboundAnnotations, this.systemAnnotationTypes.TypeAnnotation)) {
-				if (!frameworkState.matchesType(this.systemAnnotationTypes.TypeAnnotation)) {
+			if (__matchesAnnotationType(this.__unboundAnnotations, this.__systemAnnotationTypes.TypeAnnotation)) {
+				if (!frameworkState.matchesType(this.__systemAnnotationTypes.TypeAnnotation)) {
 					this.clearUnboundAnnotations();
 					throw new Error("Unable to add unbound annotations:  '" + annotation.constructor.name + "' is not a type annotation.");
 				}
 			}
 			else {
 
-				if (__matchesAnnotationType(this.unboundAnnotations, this.systemAnnotationTypes.MethodAnnotation)) {
+				if (__matchesAnnotationType(this.__unboundAnnotations, this.__systemAnnotationTypes.MethodAnnotation)) {
 					this.annotateMethods();
 				}
 				else {
 
-					if (__matchesAnnotationType(this.unboundAnnotations, this.systemAnnotationTypes.ObjectAnnotation)) {
-						if (!frameworkState.matchesType(this.systemAnnotationTypes.ObjectAnnotation)) {
+					if (__matchesAnnotationType(this.__unboundAnnotations, this.__systemAnnotationTypes.ObjectAnnotation)) {
+						if (!frameworkState.matchesType(this.__systemAnnotationTypes.ObjectAnnotation)) {
 							this.clearUnboundAnnotations();
 							throw new Error("Unable to add unbound annotations:  '" + annotation.constructor.name + "' is not an object annotation.");
 						}
@@ -286,18 +286,18 @@ function Annotations(rootNamespace, namespacePrefix) {
 				}
 			}
 
-			if (frameworkState.matchesType(this.systemAnnotationTypes.MethodAnnotation)) {
+			if (frameworkState.matchesType(this.__systemAnnotationTypes.MethodAnnotation)) {
 				this.annotateMethods();
 			}
 
 		}
-		this.unboundAnnotations.push(annotation);
+		this.__unboundAnnotations.push(annotation);
 	};
 
 	this.annotate = function Annotate(construct) {
 		if (construct != null) {
 			if (construct.constructor == Function) {
-				if (this.unboundAnnotationsAreSystemAnnotations) {
+				if (this.__unboundAnnotationsAreSystemAnnotations) {
 
 					this.defineAnnotation(construct);
 				}
@@ -319,12 +319,12 @@ function Annotations(rootNamespace, namespacePrefix) {
 	this.annotateConstruct = function(construct) {
 
 		__initializeConstruct(construct);
-		construct[__SERVICE_PREFIX].annotations = this.unboundAnnotations;
+		construct[__SERVICE_PREFIX].annotations = this.__unboundAnnotations;
 		this.clearUnboundAnnotations();
 	};
 
 	this.annotateMethods = function() {
-		var construct = this.annotatedConstructs.length == 0 ? null : this.annotatedConstructs[this.annotatedConstructs.length - 1];
+		var construct = this.__annotatedConstructs.length == 0 ? null : this.__annotatedConstructs[this.__annotatedConstructs.length - 1];
 		if (construct == null) {
 			this.clearUnboundAnnotations();
 			throw new Error("Unable to annotate methods, no method scope is available.");
@@ -339,8 +339,8 @@ function Annotations(rootNamespace, namespacePrefix) {
 	};
 
 	this.clearUnboundAnnotations = function() {
-		this.unboundAnnotations = [];
-		this.unboundAnnotationsAreSystemAnnotations = false;
+		this.__unboundAnnotations = [];
+		this.__unboundAnnotationsAreSystemAnnotations = false;
 	};
 
 	this.createAnnotatedInstance = function CreateAnnotatedInstance(type) {
@@ -359,7 +359,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 		var prefix = this.getPragmaValue("AnnotationsPrefix");
 		var namespaceName = (prefix != null ? prefix : __NAMESPACE_PREFIX) + annotationType.name;
-		if (this.annotationTypes[namespaceName] != null) {
+		if (this.__annotationTypes[namespaceName] != null) {
 			this.clearUnboundAnnotations();
 			throw new Error("Unable to define annotation.  The annotation type has already been defined.");
 		}
@@ -370,7 +370,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 			annotation.constructor = annotationType;
 			annotationType.apply(annotation, arguments);
 
-			if (annotationType == __THIS.systemAnnotationTypes.PragmaAnnotation) {
+			if (annotationType == __THIS.__systemAnnotationTypes.PragmaAnnotation) {
 				__THIS.addPragma(annotation);
 			}
 			else {
@@ -381,7 +381,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 		this.annotateConstruct(annotationType);
 		annotationType[__SERVICE_PREFIX].initialize(namespaceName, annotationHandler);
 
-		this.annotationTypes[namespaceName] = annotationHandler;
+		this.__annotationTypes[namespaceName] = annotationHandler;
 		__THIS._getServiceManager().addToNamespace(namespaceName, annotationHandler);
 	};
 
@@ -391,9 +391,9 @@ function Annotations(rootNamespace, namespacePrefix) {
 		for (var i = 0; i < arguments.length; ++i) {
 			annotationTypes.push(arguments[i]);
 		}
-		for (var j = 0; j < this.annotatedConstructs.length; ++j) {
-			var construct = this.annotatedConstructs[j];
-			if (this.systemAnnotations.indexOf(construct) == -1) {
+		for (var j = 0; j < this.__annotatedConstructs.length; ++j) {
+			var construct = this.__annotatedConstructs[j];
+			if (this.__systemAnnotations.indexOf(construct) == -1) {
 				for (var k = 0; k < annotationTypes.length; ++k) {
 					if (this.hasAnnotation(construct, annotationTypes[k])) {
 						constructs.push(construct);
@@ -407,8 +407,8 @@ function Annotations(rootNamespace, namespacePrefix) {
 
 	this.getAnnotationTypes = function GetAnnotationTypes() {
 		var annotationTypes = [];
-		for (var i in this.annotationTypes) {
-			annotationTypes.push(this.annotationTypes[i]);
+		for (var i in this.__annotationTypes) {
+			annotationTypes.push(this.__annotationTypes[i]);
 		}
 		return (annotationTypes);
 	};
@@ -419,9 +419,9 @@ function Annotations(rootNamespace, namespacePrefix) {
 	};
 
 	this.getPragmaValue = function GetPragmaValue(name) {
-		for (var i in this.pragmas) {
+		for (var i in this.__pragmas) {
 			if (i == name) {
-				return (this.pragmas[i]);
+				return (this.__pragmas[i]);
 			}
 		}
 		return (null);

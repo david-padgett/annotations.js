@@ -22,7 +22,7 @@ $$test.assertTrue("DescriptiveType: 0 unbound annotations", function() {return u
 $$test.assertTrue("DescriptiveType: annotation is defined in global namespace", function() {return global.$DescriptiveType != null;});
 $$test.assertTrue("DescriptiveType: annotation is a Function in global namespace", function() {return global.$DescriptiveType.constructor == Function;});
 $$test.assertTrue("DescriptiveType: annotation is annotated", function() {return getFrameworkState(DescriptiveType).annotations.length > 0;});
-$$test.assertTrue("DescriptiveType: annotation has TypeAnnotation annotation", function() {return getFrameworkState(DescriptiveType).annotations[0].constructor == $$af.systemAnnotationTypes.TypeAnnotation;});
+$$test.assertTrue("DescriptiveType: annotation has TypeAnnotation annotation", function() {return getFrameworkState(DescriptiveType).annotations[0].constructor == $$af.__systemAnnotationTypes.TypeAnnotation;});
 $$test.assertTrue("DescriptiveType: annotation is the correct Function in global namespace", function() {return $DescriptiveType.name == "__DefinedAnnotationeHandler";});
 $$test.assertTrue("DescriptiveType: annotation type has correct state - " + getFrameworkState(DescriptiveType).name + " == DescriptiveType", function() {return getFrameworkState(DescriptiveType).name == "$DescriptiveType";});
 
@@ -48,7 +48,7 @@ $$test.assertTrue("RESTfulType: 0 unbound annotations", function() {return unbou
 $$test.assertTrue("RESTfulType: annotation is defined in global namespace", function() {return global.$RESTfulType != null;});
 $$test.assertTrue("RESTfulType: annotation is a Function in global namespace", function() {return global.$RESTfulType.constructor == Function;});
 $$test.assertTrue("RESTfulType: annotation is annotated", function() {return getFrameworkState(RESTfulType).annotations.length > 0;});
-$$test.assertTrue("RESTfulType: annotation has TypeAnnotation annotation", function() {return getFrameworkState(RESTfulType).annotations[0].constructor == $$af.systemAnnotationTypes.TypeAnnotation;});
+$$test.assertTrue("RESTfulType: annotation has TypeAnnotation annotation", function() {return getFrameworkState(RESTfulType).annotations[0].constructor == $$af.__systemAnnotationTypes.TypeAnnotation;});
 $$test.assertTrue("RESTfulType: annotation is the correct Function in global namespace", function() {return $RESTfulType.name == "__DefinedAnnotationeHandler";});
 $$test.assertTrue("RESTfulType: annotation type has correct state - " + getFrameworkState(RESTfulType).name + " == RESTfulType", function() {return getFrameworkState(RESTfulType).name == "$RESTfulType";});
 
@@ -63,7 +63,7 @@ $Annotate(HtmlType);
 
 $$test.assertTrue("HtmlType: 3 non-system Annotations defined", function() {return boundAnnotations(3);});
 $$test.assertTrue("HtmlType: annotation has 1 annotation", function() {return getFrameworkState(HtmlType).annotations.length == 1;});
-$$test.assertTrue("HtmlType: annotation has TypeAnnotation annotation", function() {return getFrameworkState(HtmlType).annotations[0].constructor == $$af.systemAnnotationTypes.TypeAnnotation;});
+$$test.assertTrue("HtmlType: annotation has TypeAnnotation annotation", function() {return getFrameworkState(HtmlType).annotations[0].constructor == $$af.__systemAnnotationTypes.TypeAnnotation;});
 
 // Part 4
 $$test.message("test1-annotate", "RESTfulMethod: Positive - define method annotation with single system annotation");
@@ -75,7 +75,7 @@ function RESTfulMethod() {
 $Annotate(RESTfulMethod);
 
 $$test.assertTrue("RESTfulMethod: 4 non-system Annotations defined", function() {return boundAnnotations(4);});
-$$test.assertTrue("RESTfulMethod: annotation has MethodAnnotation annotation", function() {return getFrameworkState(RESTfulMethod).annotations[0].constructor == $$af.systemAnnotationTypes.MethodAnnotation;});
+$$test.assertTrue("RESTfulMethod: annotation has MethodAnnotation annotation", function() {return getFrameworkState(RESTfulMethod).annotations[0].constructor == $$af.__systemAnnotationTypes.MethodAnnotation;});
 
 // Part 5
 $$test.message("test1-annotate", "UserDefinedPrefixType: Positive - define type annotation with single system annotation, prefix is 'zz'");
@@ -90,7 +90,7 @@ $Pragma();
 $$test.assertTrue("UserDefinedPrefixType: annotation is defined in global namespace with correct prefix", function() {return global.zzUserDefinedPrefixType != null;});
 $$test.assertTrue("UserDefinedPrefixType: 5 non-system Annotations defined", function() {return boundAnnotations(5);});
 $$test.assertTrue("UserDefinedPrefixType: annotation has 1 annotations", function() {return getFrameworkState(UserDefinedPrefixType).annotations.length == 1;});
-$$test.assertTrue("UserDefinedPrefixType: annotation has TypeAnnotation annotation", function() {return getFrameworkState(UserDefinedPrefixType).annotations[0].constructor == $$af.systemAnnotationTypes.TypeAnnotation;});
+$$test.assertTrue("UserDefinedPrefixType: annotation has TypeAnnotation annotation", function() {return getFrameworkState(UserDefinedPrefixType).annotations[0].constructor == $$af.__systemAnnotationTypes.TypeAnnotation;});
 
 // Part 6
 $$test.message("test1-annotate", "NotAnAnnotation: Negative - define type annotation with single non-system annotation");
@@ -136,5 +136,5 @@ $$test.assertTrue("SchizophrenicType: annotation is defined in global namespace"
 // $$test.assertTrue("SchizophrenicType: annotation is annotated", function() {return getFrameworkState(SchizophrenicType) != null;});
 //
 // $$test.assertTrue("SchizophrenicType: annotation has 2 annotations", function() {return getFrameworkState(SchizophrenicType).annotations.length == 2;});
-// $$test.assertTrue("SchizophrenicType: annotation has TypeAnnotation annotation", function() {return getFrameworkState(SchizophrenicType).annotations[0].constructor == $$af.systemAnnotationTypes.TypeAnnotation;});
-// $$test.assertTrue("SchizophrenicType: annotation has MethodAnnotation annotation", function() {return getFrameworkState(SchizophrenicType).annotations[1].constructor == $$af.systemAnnotationTypes.MethodAnnotation;});
+// $$test.assertTrue("SchizophrenicType: annotation has TypeAnnotation annotation", function() {return getFrameworkState(SchizophrenicType).annotations[0].constructor == $$af.__systemAnnotationTypes.TypeAnnotation;});
+// $$test.assertTrue("SchizophrenicType: annotation has MethodAnnotation annotation", function() {return getFrameworkState(SchizophrenicType).annotations[1].constructor == $$af.__systemAnnotationTypes.MethodAnnotation;});
