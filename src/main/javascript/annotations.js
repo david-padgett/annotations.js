@@ -345,7 +345,7 @@ function Annotations(rootNamespace, namespacePrefix) {
 		var namespaceName = (prefix != null ? prefix : __NAMESPACE_PREFIX) + annotationType.name;
 		if (this.__annotationTypes[namespaceName] != null) {
 			this.clearUnboundAnnotations();
-			throw new Error("Unable to define annotation.  The annotation type has already been defined.");
+			throw new Error("Unable to define annotation.  The annotation type '" + namespaceName + "' has already been defined.");
 		}
 
 		// This function is bound to the new annotation and is invoked each time
